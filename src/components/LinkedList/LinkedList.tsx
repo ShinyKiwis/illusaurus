@@ -2,57 +2,56 @@
 import React, { useEffect, useRef } from 'react'
 import * as d3 from "d3"
 
-type Node = {
-  value: number
-}
-
-const linkedListData: Node[] = [
-  { value: 10 },
-  { value: 20 },
-  { value: 30 },
-  { value: 40 },
-]
-
-const LinkedList = () => {
+const LinkedListCanvas = ({data}: {data: number[]}) => {
   const listRef = useRef<SVGSVGElement | null>(null)
 
-  useEffect(() => {
+  useEffect(()=>{
+    console.log(data)
     const svg = d3.select(listRef.current)
+    const nodeRadius = 25
     svg.selectAll("circle")
-    .data(linkedListData)
-    .enter()
-    .append("circle")
-    .attr("cx", (d, i) => i * 80 + 40)
-    .attr("cy", 200)
-    .attr("r", 20)
-    .attr("fill", "white")
-    .attr("stroke", "black")
-
+      .data(data)
+      .join(
+        enter => enter
+                  .append("circle")
+                  .attr("r", nodeRadius)
+                  .attr("cx",(_,i) => 200 + i * 80)
+                  .attr("cy",_ => "50%")
+                  .attr("stroke", "black")
+                  .attr("stroke-width", "3")
+                  .attr("fill", "none")
+      )
     svg.selectAll("line")
-    .data(linkedListData.slice(0, linkedListData.length - 1))
-    .enter()
-    .append("line")
-    .attr("x1", (d, i) => i * 80 + 60)
-    .attr("y1", 200)
-    .attr("x2", (d, i) => (i + 1) * 80 + 20)
-    .attr("y2", 200)
-    .attr("stroke", "black")
-
+      .data(data.slice(0, data.length - 1))
+      .join(
+        enter => enter
+                  .append("line")
+                  .attr("x1", (_,i) => 200 + i * 80 + nodeRadius)
+                  .attr("y1", "50%")
+                  .attr("x2", (_,i) => 200 + (i+1) * 80 - nodeRadius)
+                  .attr("y2", "50%")
+                  .attr("stroke-width", "3")
+                  .style("stroke", "black")
+      )
+    
     svg.selectAll("text")
-    .data(linkedListData)
-    .enter()
-    .append("text")
-    .text(d => d.value)
-    .attr("x", (d, i) => i * 80 + 40)
-    .attr("y", 200)
-    .attr("dy", 5)
-    .attr("text-anchor", "middle");
-
-  }, [])
+      .data(data)
+      .join(
+        enter => enter
+                  .append("text")
+                  .attr("x", (_,i) => 200 + i * 80)
+                  .attr("y", (_,i) => "50%")
+                  .attr("dy", "0.4em")
+                  .attr("text-anchor", "middle")
+                  .text(d => d)
+      )
+      
+    console.log(svg)
+  }, [data])
 
   return (
-    <svg ref={listRef} width="800" height="800"></svg>
+    <svg ref={listRef} width="100%" height="100%"></svg>
   )
 }
 
-export default LinkedList
+export default LinkedListCanvas
